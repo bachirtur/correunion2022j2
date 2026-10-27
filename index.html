@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Correction animée – Piles et NPI (NSI La Réunion 2022, J2)</title>
+<style>
+:root{--bg:#f6f7f3;--card:#fff;--ink:#1d2a2e;--mute:#5d6b70;--line:#d9ddd5;--accent:#0f6b63;--accent2:#e9f3f1;--new:#f2b134;--op:#d9534f;--code:#f0f2ee;--hl:#fff1c2;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121a1c;--card:#1b2629;--ink:#e8eeee;--mute:#9bacb0;--line:#2e3c40;--accent:#4fc4b6;--accent2:#173331;--new:#e0a52c;--op:#ef7b77;--code:#141d1f;--hl:#4a3f12}}
+:root[data-theme="dark"]{--bg:#121a1c;--card:#1b2629;--ink:#e8eeee;--mute:#9bacb0;--line:#2e3c40;--accent:#4fc4b6;--accent2:#173331;--new:#e0a52c;--op:#ef7b77;--code:#141d1f;--hl:#4a3f12}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 Georgia,"Times New Roman",serif}
+main{max-width:860px;margin:0 auto;padding:24px 16px 56px}
+h1{font:700 1.7rem/1.2 "Trebuchet MS",system-ui,sans-serif;margin:0 0 6px}
+h2{font:700 1.3rem/1.25 "Trebuchet MS",system-ui,sans-serif;margin:0 0 4px;color:var(--accent)}
+p{margin:.4em 0}
+.sub{color:var(--mute);margin:0 0 20px}
+section{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;margin:0 0 22px}
+.enonce{color:var(--mute);font-size:.95rem;margin:0 0 12px}
+.sim{display:grid;grid-template-columns:minmax(150px,200px) 1fr;gap:16px;align-items:start}
+@media(max-width:600px){.sim{grid-template-columns:1fr}}
+.pilebox{background:var(--accent2);border-radius:8px;padding:10px;min-height:230px;display:flex;flex-direction:column;justify-content:flex-end}
+.pile{display:flex;flex-direction:column-reverse;gap:4px;min-height:170px;justify-content:flex-start}
+.it{background:var(--card);border:2px solid var(--accent);border-radius:6px;text-align:center;font:700 1.15rem "Courier New",monospace;padding:6px 0;position:relative}
+.it.top::after{content:"sommet";position:absolute;right:6px;top:50%;transform:translateY(-50%);font:.7rem system-ui,sans-serif;color:var(--mute);font-weight:400}
+.it.new{border-color:var(--new);animation:drop .45s ease-out}
+@keyframes drop{from{transform:translateY(-34px);opacity:0}to{transform:none;opacity:1}}
+.base{height:6px;background:var(--accent);border-radius:3px;margin-top:4px}
+.lbl{text-align:center;font:600 .85rem system-ui,sans-serif;color:var(--mute);margin-top:4px}
+.held{min-height:34px;margin-top:8px;font:.85rem system-ui,sans-serif;color:var(--mute)}
+.chip{display:inline-block;background:var(--op);color:#fff;border-radius:12px;padding:1px 10px;margin:0 3px;font:700 .95rem "Courier New",monospace}
+.toks{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
+.tok{font:700 1.1rem "Courier New",monospace;padding:4px 12px;border-radius:6px;border:2px solid var(--line);color:var(--mute)}
+.tok.done{color:var(--ink);border-color:var(--accent)}
+.tok.now{background:var(--new);color:#1d2a2e;border-color:var(--new)}
+.code{background:var(--code);border-radius:8px;padding:8px 0;margin:0 0 10px;overflow-x:auto;font:.92rem/1.5 "Courier New",monospace}
+.ln{padding:1px 12px;white-space:pre;border-left:4px solid transparent}
+.ln.on{background:var(--hl);border-left-color:var(--new)}
+.msg{min-height:3.2em;border-left:4px solid var(--accent);padding:4px 12px;background:var(--accent2);border-radius:0 8px 8px 0}
+.ctl{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;align-items:center}
+button{font:600 .95rem system-ui,sans-serif;padding:8px 14px;border-radius:8px;border:1px solid var(--accent);background:var(--card);color:var(--accent);cursor:pointer}
+button.pri{background:var(--accent);color:var(--bg)}
+button:focus-visible{outline:3px solid var(--new);outline-offset:2px}
+button:disabled{opacity:.4;cursor:default}
+.cnt{color:var(--mute);font:.85rem system-ui,sans-serif;margin-left:auto}
+.res{margin-top:12px;font-weight:700}
+.tip{border:1px dashed var(--op);border-radius:8px;padding:10px 14px;margin-top:14px;background:var(--card)}
+.tip b{color:var(--op)}
+code{font-family:"Courier New",monospace;background:var(--code);padding:1px 5px;border-radius:4px}
+@media(prefers-reduced-motion:reduce){.it.new{animation:none}}
+</style>
+</head>
+<body>
+<main>
+<h1>Exercice 1 – Piles et notation polonaise inverse</h1>
+<p class="sub">NSI, La Réunion 2022, jour 2. Avancez pas à pas avec « Suivant » ou lancez la lecture automatique.</p>
+
+<section id="q1">
+<h2>Question 1 : évaluer <code>12 4 5 × +</code></h2>
+<p class="enonce">Règle : un nombre est empilé ; un opérateur dépile deux nombres, calcule, puis empile le résultat.</p>
+<div class="toks" id="q1t"></div>
+<div class="sim"><div><div class="pilebox"><div class="pile" id="q1p"></div><div class="base"></div></div><div class="lbl">pile p</div><div class="held" id="q1h"></div></div>
+<div><div class="msg" id="q1m"></div><div class="res" id="q1r"></div></div></div>
+<div class="ctl" id="q1c"></div>
+<div class="tip"><b>À retenir :</b> <code>12 4 5 × +</code> correspond à 12 + (4 × 5) = 32. Le × agit avant le + parce que 4 et 5 sont les deux derniers nombres empilés.</div>
+</section>
+
+<section id="q2">
+<h2>Question 2 : la fonction <code>top</code></h2>
+<p class="enonce">Pile initiale p1 : 25 au sommet, puis 3, puis 7 en bas. On exécute <code>temp = top(p1)</code>.</p>
+<div class="sim"><div><div class="pilebox"><div class="pile" id="q2p"></div><div class="base"></div></div><div class="lbl">pile p1</div><div class="held" id="q2h"></div></div>
+<div><div class="code" id="q2k"></div><div class="msg" id="q2m"></div></div></div>
+<div class="ctl" id="q2c"></div>
+<div class="tip"><b>a.</b> <code>temp</code> vaut <b>25</b>. <b>b.</b> p1 est <b>inchangée</b> : 25 au sommet, puis 3, puis 7. La fonction dépile puis remet aussitôt l’élément : elle permet de « regarder » le sommet sans le perdre.</div>
+</section>
+
+<section id="q3">
+<h2>Question 3 : la fonction <code>addition(p)</code></h2>
+<p class="enonce">Exemple de test avec p contenant 10, 3, 4 (4 au sommet). La fonction ne renvoie rien : elle modifie p.</p>
+<div class="sim"><div><div class="pilebox"><div class="pile" id="q3p"></div><div class="base"></div></div><div class="lbl">pile p</div><div class="held" id="q3h"></div></div>
+<div><div class="code" id="q3k"></div><div class="msg" id="q3m"></div></div></div>
+<div class="ctl" id="q3c"></div>
+<div class="tip"><b>Piège pour plus tard :</b> pour une soustraction ou une division, l’ordre compte. Le premier élément dépilé (<code>a</code>) est le <i>second</i> opérande : on calcule <code>b - a</code>, pas <code>a - b</code>. Pour l’addition, l’ordre n’a pas d’importance.</div>
+</section>
+
+<section id="q4">
+<h2>Question 4 : calculer (3+5)×7, soit <code>3 5 + 7 ×</code></h2>
+<p class="enonce">On traduit chaque élément de la NPI : un nombre devient <code>empiler</code>, un opérateur devient un appel de fonction.</p>
+<div class="sim"><div><div class="pilebox"><div class="pile" id="q4p"></div><div class="base"></div></div><div class="lbl">pile p</div><div class="held" id="q4h"></div></div>
+<div><div class="code" id="q4k"></div><div class="msg" id="q4m"></div></div></div>
+<div class="ctl" id="q4c"></div>
+<div class="tip"><b>Réponse à compléter :</b> <code>empiler(p,5)</code>, <code>addition(p)</code>, <code>empiler(p,7)</code>, <code>multiplication(p)</code>. À la fin, la pile contient seulement 56.</div>
+</section>
+</main>
+
+<script>
+function mount(id,steps,opt){
+  opt=opt||{};
+  var pile=document.getElementById(id+"p"),held=document.getElementById(id+"h"),msg=document.getElementById(id+"m"),
+      ctl=document.getElementById(id+"c"),kd=document.getElementById(id+"k"),td=document.getElementById(id+"t"),rd=document.getElementById(id+"r");
+  var i=0,timer=null;
+  if(kd&&opt.code){opt.code.forEach(function(l){var d=document.createElement("div");d.className="ln";d.textContent=l;kd.appendChild(d)})}
+  if(td&&opt.toks){opt.toks.forEach(function(t){var s=document.createElement("span");s.className="tok";s.textContent=t;td.appendChild(s)})}
+  ctl.innerHTML='<button class="pri" data-a="n">Suivant</button><button data-a="p">Précédent</button><button data-a="a">Lecture auto</button><button data-a="r">Recommencer</button><span class="cnt"></span>';
+  var bn=ctl.querySelector('[data-a=n]'),bp=ctl.querySelector('[data-a=p]'),ba=ctl.querySelector('[data-a=a]'),br=ctl.querySelector('[data-a=r]'),cnt=ctl.querySelector(".cnt");
+  function draw(){
+    var s=steps[i];
+    pile.innerHTML="";
+    s.st.forEach(function(v,k){var d=document.createElement("div");d.className="it"+(k==s.st.length-1?" top":"")+(s.nw&&k==s.st.length-1?" new":"");d.textContent=v;pile.appendChild(d)});
+    held.innerHTML=s.h&&s.h.length?(s.hl||"En main : ")+s.h.map(function(x){return '<span class="chip">'+x+'</span>'}).join(""):"";
+    msg.textContent=s.m;
+    if(kd){[].forEach.call(kd.children,function(c,k){c.classList.toggle("on",k===s.ln)})}
+    if(td){[].forEach.call(td.children,function(c,k){c.className="tok"+(k<s.tk?" done":"")+(k===s.tk?" now":"")})}
+    if(rd)rd.textContent=i==steps.length-1?opt.res:"";
+    cnt.textContent="Étape "+(i+1)+" / "+steps.length;
+    bp.disabled=i==0;bn.disabled=i==steps.length-1;
+    if(i==steps.length-1)stop();
+  }
+  function stop(){if(timer){clearInterval(timer);timer=null}ba.textContent="Lecture auto"}
+  bn.onclick=function(){stop();if(i<steps.length-1){i++;draw()}};
+  bp.onclick=function(){stop();if(i>0){i--;draw()}};
+  br.onclick=function(){stop();i=0;draw()};
+  ba.onclick=function(){
+    if(timer){stop();return}
+    if(i==steps.length-1)i=0;
+    draw();ba.textContent="Pause";
+    timer=setInterval(function(){if(i<steps.length-1){i++;draw()}else stop()},1600);
+  };
+  draw();
+}
+/* Q1 */
+mount("q1",[
+ {st:[],m:"On part d’une pile vide. On lit l’expression de gauche à droite.",tk:-1},
+ {st:[12],nw:1,m:"12 est un nombre : on l’empile.",tk:0},
+ {st:[12,4],nw:1,m:"4 est un nombre : on l’empile.",tk:1},
+ {st:[12,4,5],nw:1,m:"5 est un nombre : on l’empile. Le sommet est maintenant 5.",tk:2},
+ {st:[12],h:[5,4],hl:"On dépile : ",m:"× est un opérateur : on dépile deux nombres, 5 puis 4.",tk:3},
+ {st:[12,20],nw:1,m:"On calcule 4 × 5 = 20 et on empile le résultat.",tk:3},
+ {st:[],h:[20,12],hl:"On dépile : ",m:"+ est un opérateur : on dépile 20 puis 12.",tk:4},
+ {st:[32],nw:1,m:"On calcule 12 + 20 = 32 et on empile le résultat. Fin de la lecture : on renvoie le sommet.",tk:5}
+],{toks:["12","4","5","×","+"],res:"Résultat : 32"});
+/* Q2 */
+mount("q2",[
+ {st:[7,3,25],m:"Situation de départ : p1 contient 7, 3, 25 (25 au sommet).",ln:-1},
+ {st:[7,3],h:[25],hl:"x = ",m:"x = depiler(p) : le sommet est retiré de la pile et rangé dans x. x vaut 25.",ln:1},
+ {st:[7,3,25],nw:1,h:[25],hl:"x = ",m:"empiler(p, x) : on remet 25 au sommet. La pile est revenue comme avant.",ln:2},
+ {st:[7,3,25],h:[25],hl:"temp = ",m:"return x : la fonction renvoie 25, donc temp = 25. La pile p1 n’a pas changé.",ln:3}
+],{code:["def top(p):","    x = depiler(p)","    empiler(p, x)","    return x"]});
+/* Q3 */
+mount("q3",[
+ {st:[10,3,4],m:"Pile de départ : 10, 3, 4 (4 au sommet).",ln:-1},
+ {st:[10,3],h:[4],hl:"a = ",m:"a = depiler(p) : on retire 4. a vaut 4.",ln:1},
+ {st:[10],h:[4,3],hl:"a, b = ",m:"b = depiler(p) : on retire 3. b vaut 3.",ln:2},
+ {st:[10,7],nw:1,m:"empiler(p, a + b) : on empile 4 + 3 = 7. Les deux éléments du sommet sont bien remplacés par leur somme.",ln:3}
+],{code:["def addition(p):","    a = depiler(p)","    b = depiler(p)","    empiler(p, a + b)"]});
+/* Q4 */
+mount("q4",[
+ {st:[],m:"On crée une pile vide.",ln:0},
+ {st:[3],nw:1,m:"NPI : 3. C’est un nombre, donc on l’empile.",ln:1},
+ {st:[3,5],nw:1,m:"NPI : 5. C’est un nombre, donc on l’empile.",ln:2},
+ {st:[8],nw:1,m:"NPI : +. On appelle addition(p) : 3 et 5 sont remplacés par 8.",ln:3},
+ {st:[8,7],nw:1,m:"NPI : 7. C’est un nombre, donc on l’empile.",ln:4},
+ {st:[56],nw:1,m:"NPI : ×. On appelle multiplication(p) : 8 et 7 sont remplacés par 56. On retrouve (3+5)×7 = 56.",ln:5}
+],{code:["p = pile_vide()","empiler(p, 3)","empiler(p, 5)","addition(p)","empiler(p, 7)","multiplication(p)"]});
+</script>
+</body>
+</html>
